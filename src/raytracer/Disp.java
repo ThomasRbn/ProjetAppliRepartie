@@ -44,7 +44,8 @@ public class Disp {
     public void setImage(Image i, int x0, int y0){
 	for(int y=0; y<i.getHeight() ; y++)
 	    for(int x=0; x<i.getWidth() ; x++)
-		renderer.setImagePixel(x0+x, y0+y, i.getPixel(x,y));
+            if((x-x0<i.getWidth()/2&&y-y0<i.getHeight()/2) || (x-x0>i.getWidth()/2&&y-y0>i.getHeight()/2) ) {
+                renderer.setImagePixel(x0+x, y0+y, i.getPixel(x,y));}
 	
 	frame.repaint();
     }
