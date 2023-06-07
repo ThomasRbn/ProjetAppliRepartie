@@ -2,14 +2,46 @@ import raytracer.Disp;
 import raytracer.Image;
 import raytracer.Scene;
 
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 
 public class LancerRaytracer {
 
+    private static ArrayList<ServiceClient> clients;
+
+    static Disp disp;
+
     public static String aide = "Raytracer : synthèse d'image par lancé de rayons (https://en.wikipedia.org/wiki/Ray_tracing_(graphics))\n\nUsage : java LancerRaytracer [fichier-scène] [largeur] [hauteur]\n\tfichier-scène : la description de la scène (par défaut simple.txt)\n\tlargeur : largeur de l'image calculée (par défaut 512)\n\thauteur : hauteur de l'image calculée (par défaut 512)\n";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RemoteException {
+
+        try {
+            String serveur = "100.64.80.242";
+            int port = 1099;
+
+            Registry reg2 = LocateRegistry.getRegistry(serveur, port);
+            ServiceDistributeur distributeur = (ServiceDistributeur) reg2.lookup("distributeur");
+
+
+
+            try {
+                clients = distributeur.getClients();
+            } catch (RemoteException e) {
+                System.out.println("Impossible d'enregistrer la reference: \n" + e.getMessage());
+            }
+        } catch (NotBoundException | RemoteException e) {
+            throw new RuntimeException(e);
+        }
+
+
+
+
 
         // Le fichier de description de la scène si pas fournie
         String fichier_description = "src/simple.txt";
@@ -30,7 +62,7 @@ public class LancerRaytracer {
 
 
         // création d'une fenêtre
-        Disp disp = new Disp("Raytracer", largeur, hauteur);
+        disp = new Disp("Raytracer", largeur, hauteur);
 
         // Initialisation d'une scène depuis le modèle
         Scene scene = new Scene(fichier_description, largeur, hauteur);
@@ -48,7 +80,24 @@ public class LancerRaytracer {
         System.out.println("Calcul de l'image :\n - Coordonnées : " + x0 + "," + y0
                 + "\n - Taille " + largeur + "x" + hauteur);
 
-        Image image = scene.compute(x0, y0, l, h);
+//        Image image = scene.compute(x0, y0, l, h);
+        int subdivisions = 10;
+        int subdivisionWidth = largeur / subdivisions;
+        int subdivisionHeight = hauteur / subdivisions;
+        int numClients = clients.size();
+
+        for (int i = 0; i < subdivisions; i++) {
+            for (int j = 0; j < subdivisions; j++) {
+                x0 = i * subdivisionWidth;
+                y0 = j * subdivisionHeight;
+                int w = subdivisionWidth;
+                h = subdivisionHeight;
+
+                int clientIndex = (i + j) % numClients;
+                ServiceClient client = clients.get(clientIndex);
+                disp.setImage(client.compute(scene, x0, y0, w, h), x0, y0);
+            }
+        }
 //        Image image = scene.compute(x0, y0, l/2, h/2);
 //        Image image2 = scene.compute(l/2, h/2, l/2, h/2);
 
@@ -59,7 +108,7 @@ public class LancerRaytracer {
         System.out.println("Image calculée en :" + duree + " ms");
 
         // Affichage de l'image calculée
-        disp.setImage(image, x0, y0);
+//        disp.setImage(image, x0, y0);
 //        disp.setImage(image2, l/2, h/2);
     }
 }
