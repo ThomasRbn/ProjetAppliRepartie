@@ -13,8 +13,7 @@ import java.util.ArrayList;
 
 public class LancerRaytracer {
 
-    private static ArrayList<ServiceClient> clients;
-
+    static ServiceDistributeur distributeur;
     static Disp disp;
 
     public static String aide = "Raytracer : synthèse d'image par lancé de rayons (https://en.wikipedia.org/wiki/Ray_tracing_(graphics))\n\nUsage : java LancerRaytracer [fichier-scène] [largeur] [hauteur]\n\tfichier-scène : la description de la scène (par défaut simple.txt)\n\tlargeur : largeur de l'image calculée (par défaut 512)\n\thauteur : hauteur de l'image calculée (par défaut 512)\n";
@@ -26,15 +25,8 @@ public class LancerRaytracer {
             int port = 1099;
 
             Registry reg2 = LocateRegistry.getRegistry(serveur, port);
-            ServiceDistributeur distributeur = (ServiceDistributeur) reg2.lookup("distributeur");
+            distributeur = (ServiceDistributeur) reg2.lookup("distributeur");
 
-
-
-            try {
-                clients = distributeur.getClients();
-            } catch (RemoteException e) {
-                System.out.println("Impossible d'enregistrer la reference: \n" + e.getMessage());
-            }
         } catch (NotBoundException | RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -81,7 +73,6 @@ public class LancerRaytracer {
         int subdivisions = 10;
         int subdivisionWidth = largeur / subdivisions;
         int subdivisionHeight = hauteur / subdivisions;
-        int numClients = clients.size();
 
         for (int i = 0; i < subdivisions; i++) {
             for (int j = 0; j < subdivisions; j++) {
@@ -90,10 +81,7 @@ public class LancerRaytracer {
                 int w = subdivisionWidth;
                 h = subdivisionHeight;
 
-                int clientIndex = (i + j) % numClients;
-                ServiceClient client = clients.get(clientIndex);
-                disp.setImage(client.compute(scene, x0, y0, w, h), x0, y0);
-                new TransmetteurImage(client, scene, x0, y0, w, h).start();
+                new TransmetteurImage(scene, x0, y0, w, h).start();
 
             }
         }
@@ -113,13 +101,11 @@ public class LancerRaytracer {
 
 
     static class TransmetteurImage extends Thread {
-        private ServiceClient client;
 
         private Scene scene;
 
         private int x0,y0,w,h;
-        public TransmetteurImage(ServiceClient client, Scene scene, int x0,int y0,int w, int h) {
-            this.client = client;
+        public TransmetteurImage(Scene scene, int x0,int y0,int w, int h) {
             this.scene = scene;
             this.x0 = x0;
             this.y0 = y0;
@@ -130,13 +116,12 @@ public class LancerRaytracer {
         @Override
         public void run() {
             try {
-                disp.setImage(client.compute(scene, x0, y0, w, h), x0, y0);
-            } catch (RemoteException e) { //Cas ou le client n'existe plus
-                synchronized (clients) {
-                    System.out.println("SUppression client");
-                    clients.remove(clients);
-                }
+                disp.setImage(distributeur.distribuerMessage(scene, x0, y0, w, h), x0, y0);
+            } catch (RemoteException e) {
+                System.out.println("Impossible de compute la scène");
+                e.printStackTrace();
             }
+
         }
     }
 }
