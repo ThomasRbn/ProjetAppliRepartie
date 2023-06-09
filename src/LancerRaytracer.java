@@ -40,9 +40,6 @@ public class LancerRaytracer {
         }
 
 
-
-
-
         // Le fichier de description de la scène si pas fournie
         String fichier_description = "src/simple.txt";
 
@@ -96,6 +93,8 @@ public class LancerRaytracer {
                 int clientIndex = (i + j) % numClients;
                 ServiceClient client = clients.get(clientIndex);
                 disp.setImage(client.compute(scene, x0, y0, w, h), x0, y0);
+                new TransmetteurImage(client, scene, x0, y0, w, h).start();
+
             }
         }
 //        Image image = scene.compute(x0, y0, l/2, h/2);
@@ -110,5 +109,34 @@ public class LancerRaytracer {
         // Affichage de l'image calculée
 //        disp.setImage(image, x0, y0);
 //        disp.setImage(image2, l/2, h/2);
+    }
+
+
+    static class TransmetteurImage extends Thread {
+        private ServiceClient client;
+
+        private Scene scene;
+
+        private int x0,y0,w,h;
+        public TransmetteurImage(ServiceClient client, Scene scene, int x0,int y0,int w, int h) {
+            this.client = client;
+            this.scene = scene;
+            this.x0 = x0;
+            this.y0 = y0;
+            this.w = w;
+            this.h = h;
+        }
+
+        @Override
+        public void run() {
+            try {
+                disp.setImage(client.compute(scene, x0, y0, w, h), x0, y0);
+            } catch (RemoteException e) { //Cas ou le client n'existe plus
+                synchronized (clients) {
+                    System.out.println("SUppression client");
+                    clients.remove(clients);
+                }
+            }
+        }
     }
 }
