@@ -27,6 +27,7 @@ public class LancerClient {
 
             try {
                 distributeur.enregistrerClient(rd);
+                System.out.println("Connexion reussie");
             } catch (RemoteException e) {
                 System.out.println("Impossible d'enregistrer la reference: \n" + e.getMessage());
             }

@@ -36,7 +36,7 @@ public class LancerRaytracer {
         String fichier_description = "src/simple.txt";
 
         // largeur et hauteur par défaut de l'image à reconstruire
-        int largeur = 512, hauteur = 512;
+        int largeur = 2048, hauteur = 2048;
 
         if (args.length > 0) {
             fichier_description = args[0];
@@ -70,7 +70,7 @@ public class LancerRaytracer {
                 + "\n - Taille " + largeur + "x" + hauteur);
 
 //        Image image = scene.compute(x0, y0, l, h);
-        int subdivisions = 10;
+        int subdivisions = 14;
         int subdivisionWidth = largeur / subdivisions;
         int subdivisionHeight = hauteur / subdivisions;
 
@@ -116,7 +116,10 @@ public class LancerRaytracer {
         @Override
         public void run() {
             try {
-                disp.setImage(distributeur.distribuerMessage(scene, x0, y0, w, h), x0, y0);
+                Image img = distributeur.distribuerMessage(scene, x0, y0, w, h);
+                if(img != null) {
+                    disp.setImage(img, x0, y0);
+                }
             } catch (RemoteException e) {
                 System.out.println("Impossible de compute la scène");
                 e.printStackTrace();

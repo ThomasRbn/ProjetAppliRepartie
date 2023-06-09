@@ -25,7 +25,9 @@ public class Distributeur implements ServiceDistributeur {
 
     @Override
     public Image distribuerMessage(Scene scene, int x0, int y0, int w, int h) throws RemoteException {
+        if(clients.size()==0)return null;
         int clientIndex = (i) % clients.size();
+        i++;
         ServiceClient client = clients.get(clientIndex);
         try {
             return client.compute(scene, x0, y0, w, h);
@@ -34,8 +36,11 @@ public class Distributeur implements ServiceDistributeur {
             synchronized (clients) {
                 clients.remove(client);
             }
+
+            //Envoie au client suivant
+            System.out.println("Envoie client suivant");
+            return this.distribuerMessage(scene, x0, y0, w, h);
         }
-        return null;
     }
 
 
