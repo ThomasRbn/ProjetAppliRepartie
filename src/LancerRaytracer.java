@@ -21,7 +21,7 @@ public class LancerRaytracer {
     public static void main(String[] args) throws RemoteException {
 
         try {
-            String serveur = "100.64.80.242";
+            String serveur = "100.64.80.196";
             int port = 1099;
 
             if (args.length > 0) {
@@ -38,11 +38,12 @@ public class LancerRaytracer {
 
 
         // Le fichier de description de la scène si pas fournie
-        String fichier_description = "src/simple.txt";
+        String fichier_description = "./simple.txt";
 
         // largeur et hauteur par défaut de l'image à reconstruire
         int largeur = 2048, hauteur = 2048;
 
+/*
         if (args.length > 0) {
             fichier_description = args[0];
             if (args.length > 1) {
@@ -52,7 +53,7 @@ public class LancerRaytracer {
             }
         } else {
             System.out.println(aide);
-        }
+        }*/
 
 
         // création d'une fenêtre
@@ -75,7 +76,7 @@ public class LancerRaytracer {
 //                + "\n - Taille " + largeur + "x" + hauteur);
 
 //        Image image = scene.compute(x0, y0, l, h);
-        int subdivisions = 14;
+        int subdivisions = 20;
         int subdivisionWidth = largeur / subdivisions;
         int subdivisionHeight = hauteur / subdivisions;
 
