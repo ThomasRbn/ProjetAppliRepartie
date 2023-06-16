@@ -70,9 +70,9 @@ public class LancerRaytracer {
         int l = largeur, h = hauteur;
 
         // Chronométrage du temps de calcul
-        Instant debut = Instant.now();
-        System.out.println("Calcul de l'image :\n - Coordonnées : " + x0 + "," + y0
-                + "\n - Taille " + largeur + "x" + hauteur);
+//        Instant debut = Instant.now();
+//        System.out.println("Calcul de l'image :\n - Coordonnées : " + x0 + "," + y0
+//                + "\n - Taille " + largeur + "x" + hauteur);
 
 //        Image image = scene.compute(x0, y0, l, h);
         int subdivisions = 14;
@@ -93,11 +93,11 @@ public class LancerRaytracer {
 //        Image image = scene.compute(x0, y0, l/2, h/2);
 //        Image image2 = scene.compute(l/2, h/2, l/2, h/2);
 
-        Instant fin = Instant.now();
-
-        long duree = Duration.between(debut, fin).toMillis();
-
-        System.out.println("Image calculée en :" + duree + " ms");
+//        Instant fin = Instant.now();
+//
+//        long duree = Duration.between(debut, fin).toMillis();
+//
+//        System.out.println("Image calculée en :" + duree + " ms");
 
         // Affichage de l'image calculée
 //        disp.setImage(image, x0, y0);
