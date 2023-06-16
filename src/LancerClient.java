@@ -14,7 +14,7 @@ public class LancerClient {
                 serveur = args[0];
             }
             if (args.length > 1) {
-                port = Integer.parseInt(args[0]);
+                port = Integer.parseInt(args[1]);
             }
 
             Registry reg2 = LocateRegistry.getRegistry(serveur, port);
