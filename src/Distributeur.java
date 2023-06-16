@@ -19,7 +19,7 @@ public class Distributeur implements ServiceDistributeur {
 
     @Override
     public void enregistrerClient(ServiceClient var1) throws RemoteException {
-        System.out.println(var1);
+        System.out.println("Connexion du client"+var1);
         clients.add(var1);
     }
 

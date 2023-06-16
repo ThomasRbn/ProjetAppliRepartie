@@ -28,15 +28,13 @@ public class LancerRaytracer {
                 serveur = args[0];
             }
             if (args.length > 1) {
-                port = Integer.parseInt(args[0]);
+                port = Integer.parseInt(args[1]);
             }
 
             Registry reg2 = LocateRegistry.getRegistry(serveur, port);
             distributeur = (ServiceDistributeur) reg2.lookup("distributeur");
 
-        } catch (NotBoundException | RemoteException e) {
-            throw new RuntimeException(e);
-        }
+
 
 
         // Le fichier de description de la scène si pas fournie
@@ -104,6 +102,9 @@ public class LancerRaytracer {
         // Affichage de l'image calculée
 //        disp.setImage(image, x0, y0);
 //        disp.setImage(image2, l/2, h/2);
+        } catch (NotBoundException | RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
