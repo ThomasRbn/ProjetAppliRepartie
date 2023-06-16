@@ -10,6 +10,13 @@ public class LancerClient {
             String serveur = "100.64.80.242";
             int port = 1099;
 
+            if (args.length > 0) {
+                serveur = args[0];
+            }
+            if (args.length > 1) {
+                port = Integer.parseInt(args[0]);
+            }
+
             Registry reg2 = LocateRegistry.getRegistry(serveur, port);
 
 //            String[] list = reg2.list();
@@ -27,7 +34,7 @@ public class LancerClient {
 
             try {
                 distributeur.enregistrerClient(rd);
-                System.out.println("Connexion reussie");
+                System.out.println("Connexion reussie, attente des calculs!");
             } catch (RemoteException e) {
                 System.out.println("Impossible d'enregistrer la reference: \n" + e.getMessage());
             }

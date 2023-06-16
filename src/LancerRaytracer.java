@@ -24,6 +24,13 @@ public class LancerRaytracer {
             String serveur = "100.64.80.242";
             int port = 1099;
 
+            if (args.length > 0) {
+                serveur = args[0];
+            }
+            if (args.length > 1) {
+                port = Integer.parseInt(args[0]);
+            }
+
             Registry reg2 = LocateRegistry.getRegistry(serveur, port);
             distributeur = (ServiceDistributeur) reg2.lookup("distributeur");
 
